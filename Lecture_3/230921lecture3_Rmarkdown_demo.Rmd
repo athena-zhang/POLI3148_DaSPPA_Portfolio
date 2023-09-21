@@ -1,0 +1,62 @@
+---
+title: "230921lecture3_Rmarkdown_demo"
+author: "Athena Zhang"
+date: "2023-09-21"
+output:
+  pdf_document: default
+  word_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+## Level 1 heading (\##)
+
+### Level 2 heading (\###)
+
+#### Level 3 heading (\####)
+
+##### Level 4 heading (\#####)
+
+Main text blah blah blah
+
+## Adding code to your document
+
+```{r}
+log(50)
+```
+
+```{r}
+1+1
+```
+
+## Output Figures
+
+```{r}
+plot(1:10, 1:10)
+```
+
+## Display Data
+
+```{r}
+cars
+```
+
+## In-line R code
+
+Scientific research shows that 12223 + 12111 = `r 12223 + 12111`\
+\
+876549 + 45678987 = `r 876549 + 45678987`
+
+4\*7834209 = `r 4*7834209`
+
+### Installing "TinyTex"
+
+```{r}
+# install.packages("tinytex")
+# tinytex::install_tinytex()
+```
