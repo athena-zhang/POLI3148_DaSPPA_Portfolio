@@ -1,0 +1,146 @@
+---
+title: "231005In_Class_Exercise"
+author: "Athena Zhang"
+date: "2023-10-05"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# In-Class Exercise
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+d <- read_csv("_DataPublic_/vdem/1984_2022/vdem_1984_2022_external.csv")
+```
+
+## 1. Codebook lookup
+
+### 1.1 What indicators regarding the quality of education are available in the V-Dem datasets?
+
+"e_peaveduc" = average years of education among citizens older than 15 "e_peedgini" = How unequal is the level of education achieved by the population aged 15 years and older?
+
+### 1.2 What are the data's coverage (i.e., for which countries and years do we have data?)
+
+1.2.1 Selecting:
+
+```{r}
+d_edu <- d |> 
+  select(country_name, year, e_peaveduc, e_peedgini)
+```
+
+1.2.2 Renaming:
+
+```{r}
+d_edu <- d_edu |>
+  rename("Country" = "country_name", "Year"="year", "Avg_Edu_Yrs"="e_peaveduc", "Edu_Gini"="e_peedgini")
+```
+
+```{r}
+d_edu
+```
+
+1.2.3 Finding how many countries:
+
+```{r}
+d_edu |>
+  distinct(Country) |>
+  count()
+```
+
+**We have 181 countries**. Below are the individual countries.
+
+```{r}
+d_edu |> select(Country) |> distinct()
+```
+
+1.2.4 **We have data from 1984 to 2022** but some countries have missing data in some years. See below.
+
+```{r}
+d_edu|>
+  mutate(Avg_edu_yrs_missing = as.numeric(is.na(Avg_Edu_Yrs)), .after = Avg_Edu_Yrs)|>
+  group_by(Country)|>
+  summarise(N_Year_missing = sum(Avg_edu_yrs_missing))
+
+```
+
+### 1.3 What are their sources? Provide the link to at least 1 source
+
+<https://clio-infra.eu/Indicators/AverageYearsofEducation.html>
+
+\^ Average years of Education (from Clio Infra)
+
+<https://clio-infra.eu/Indicators/EducationalInequalityGiniCoefficient.html>
+
+\^ Gini Coefficient for Educational Inequality (from Clio Infra)
+
+## 2. Subset by columns
+
+### 2.1 Create a dataset containing only the country-year identifiers and indicators of education quality
+
+See section 1.2.1
+
+### 2.2 Rename the columns of education quality to make them informative
+
+See section 1.2.2
+
+"Avg_Edu_Yrs"="e_peaveduc"
+
+"Edu_Gini"="e_peedgini"
+
+## 3. Subset by rows
+
+### 3.1 List 5 countries-years that have the highest education level among its population
+
+```{r}
+d_edu |>
+  slice_max(order_by = Avg_Edu_Yrs, n = 5, with_ties = FALSE)
+```
+
+### 3.2 List 5 countries-years that suffer from the most severe inequality in education.
+
+```{r}
+d_edu |>
+  slice_max(order_by = Edu_Gini, n = 5)
+```
+
+## 4. Summarise the data
+
+### 4.1 Check data availability: For which countries and years are the indicators of education quality available?
+
+See section 1.2.4
+
+### 4.2 Create two types of country-level indicators of education quality
+
+1.  Average level of education quality from 1984 to 2022
+
+```{r}
+d_edu |>
+  group_by(Country) |>
+  summarise(Avg_Edu_Level = mean(Avg_Edu_Yrs, na.rm = TRUE), Avg_Gini = mean(Edu_Gini, na.rm = TRUE)) |>
+  arrange(Avg_Edu_Level)
+```
+
+2.  Change of education quality from 1984 to 2022
+
+```{r}
+d_edu |>
+  group_by(Country)|>
+  arrange(Year)|>
+  summarise(Edu_quality_2022_1984 = (last(Avg_Edu_Yrs)-first(Avg_Edu_Yrs)) / first(Avg_Edu_Yrs))|>
+  ungroup() |>
+  arrange(Edu_quality_2022_1984)
+```
+
+### 4.3 Examine the data and briefly discuss: Which countries perform the best and the worst in terms of education quality in the past four decades?
+
+On average, Burkina Faso, Niger, Mali, Somalia, and Burundi, from lowest to highest respectively, have the lowest avaerage years of education among citizens above 15.
+
+However, countries like Sweden, Belarus, Australia, Moldova, and Namibia have experienced the least change in average education years over the past four decades.
+
+On the other hand, Germany, Australia, United Kingdom, Canada, and Switzerland have the highest average education years among citizens above 15.

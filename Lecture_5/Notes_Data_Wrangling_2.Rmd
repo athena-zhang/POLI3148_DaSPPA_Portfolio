@@ -1,0 +1,75 @@
+---
+title: "Notes_Data_Wrangling_2"
+author: "Athena Zhang"
+date: "2023-10-05"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Data Wrangling Cont.
+
+## 0. Import data
+
+```{r}
+d <- read_csv("_DataPublic_/vdem/1984_2022/vdem_1984_2022_external.csv")
+```
+
+## 1. Reshape the V-Dem dataset
+
+*e.g. want: each row contain country-year-variable (new dataset is a country-year-observation)*
+
+```{r}
+d |> select(country_name) |> distinct()
+
+```
+
+```{r}
+d_subset <- d |> select(country_name, year, starts_with("e_"))
+View(d_subset)
+```
+
+```{r}
+d_subset_long <-
+  d_subset |> pivot_longer(cols = starts_with("e_"))
+View(d_subset_long)
+```
+
+*e.g. want: widen the above long table so that each Year has its own column*
+
+```{r}
+d_subset_wide_year <-
+  d_subset_long |> pivot_wider(names_from = year, values_from = value)
+View(d_subset_wide_year)
+```
+
+## 2. Stack multiple subsets of the V-Dem datasets by row and by columns
+
+*e.g. merge the datasets of the V-dem data **by columns***
+
+```{r}
+d_VdemIndex <- read.csv("_DataPublic_/vdem/1984_2022/vdem_1984_2022_index.csv")
+```
+
+```{r}
+d_stack <- bind_cols(d, d_VdemIndex)
+View(d_stack)
+```
+
+*e.g. merge two datasetes of the V-dem data **by rows***
+
+```{r}
+d_1945_1983 <- read.csv("_DataPublic_/vdem/1945_1983/vdem_1945_1983_external.csv")
+View(d_1945_1983)
+```
+
+```{r}
+d_1945_2022 <- bind_rows(d, d_1945_1983)
+View(d_1945_2022)
+```
+
+```{r}
+d_1945_2022 |> select(year) |> distinct() |> arrange(year)
+```
