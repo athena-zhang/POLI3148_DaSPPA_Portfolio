@@ -202,17 +202,19 @@ names(d_gdp_edu_fh)
 
 Understand the behavior of different `join_` functions
 
--   `left_join`: Merge and only keep observations that appear in the left-hand-side table.
+-   `left_join`: Merge and only keep observations whose identifiers (matching keys) appear in the left-hand-side table.
 
--   `right_join`: Merge and only keep observations that appear in the right-hand-side table.
+-   `right_join`: Merge and only keep observations whose identifiers (matching keys) appear in the right-hand-side table.
 
--   `inner_join`: Merge and only keep observations that appear in both tables.
+-   `inner_join`: Merge and only keep observations whose identifiers (matching keys) appear in both tables.
 
--   `full_join`: Merge and keep observations that appear either table.
+-   `full_join`: Merge and keep observations whose identifiers (matching keys) appear either table.
 
--   `anti_join`: Filter out observations that does appears in the right-hand-side table
+-   `anti_join`: Filter out observations whose identifiers (matching keys) does appeard in the right-hand-side table
 
--   `semi_join`: Filter out observations that does not appear in the right-hand-side table
+-   `semi_join`: Filter out observations whose identifiers (matching keys) does not appear in the right-hand-side table
+
+![](images/dplyr-data-join-functions-overview_inner_join-left_join-right_join-full_join-semi_join-anti_join.png)
 
 ## Task 1: The Case
 
@@ -480,21 +482,21 @@ Comparing the two output types
 
 \footnotesize
 
-+--------+----------------------------------------------------------+------------------------------------------------------------------------------------------+
-| Type   | Pro                                                      | Con                                                                                      |
-+========+==========================================================+==========================================================================================+
-| `.csv` | -   Readable outside R                                   | -   Variable types may change when you read it back if you do not carefully specify them |
-|        |                                                          |                                                                                          |
-|        | -   Conveniently convertible to Excel files              | -   Error-prone with *text* data (encoding, line breaks etc.)                            |
-|        |                                                          |                                                                                          |
-|        |                                                          | -   (Maybe) takes longer to read                                                         |
-+--------+----------------------------------------------------------+------------------------------------------------------------------------------------------+
-| `.rds` | -   **Replicable**: Get precisely how the data are saved | -   Can't read `.rds` outside R                                                          |
-|        |                                                          |                                                                                          |
-|        | -   Smaller files (if stick with default compression)    |                                                                                          |
-|        |                                                          |                                                                                          |
-|        | -   (Sometimes) faster read/write                        |                                                                                          |
-+--------+----------------------------------------------------------+------------------------------------------------------------------------------------------+
++------------+----------------------------------------------------------+------------------------------------------------------------------------------------------+
+| Type       | Pro                                                      | Con                                                                                      |
++============+==========================================================+==========================================================================================+
+| `.csv`     | -   Readable outside R                                   | -   Variable types may change when you read it back if you do not carefully specify them |
+|            |                                                          |                                                                                          |
+|            | -   Conveniently convertible to Excel files              | -   Error-prone with *text* data (encoding, line breaks etc.)                            |
+|            |                                                          |                                                                                          |
+|            |                                                          | -   (Maybe) takes longer to read                                                         |
++------------+----------------------------------------------------------+------------------------------------------------------------------------------------------+
+| `.rds`     | -   **Replicable**: Get precisely how the data are saved | -   Can't read `.rds` outside R                                                          |
+|            |                                                          |                                                                                          |
+|            | -   Smaller files (if stick with default compression)    |                                                                                          |
+|            |                                                          |                                                                                          |
+|            | -   (Sometimes) faster read/write                        |                                                                                          |
++------------+----------------------------------------------------------+------------------------------------------------------------------------------------------+
 
 ## Saving Your Outputs after Data Wrangling
 
