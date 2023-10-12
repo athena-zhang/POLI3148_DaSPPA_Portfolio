@@ -130,6 +130,11 @@ Why? Your current *Environment* is filled with trash!
 
 Solution: [Clear]{.underline} and [start over]{.underline}
 
+```{r}
+# use broom or the following:
+rm(list = ls())
+```
+
 ## Locate the Problem: Clear, clear, clear
 
 -   Do not save your *Environment* to a `.Rdata` file. If it is already saved. Delete it!
