@@ -1,0 +1,1473 @@
+---
+title: "Douglas et al Ch1-3"
+author: "Athena Zhang"
+date: "2023-09-26"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Useful R resources
+
+**General R resources**
+
+-   [R-Project](https://cran.r-project.org/other-docs.html): User contributed documentation
+-   [The R Journal](https://journal.r-project.org/): Journal of the R project for statistical computing
+-   [Swirl](http://swirlstats.com/): An R package that teaches you R from within R
+-   [RStudio's printable cheatsheets](https://www.rstudio.com/resources/cheatsheets/)
+-   [Rseek](http://rseek.org/) A custom Google search for R-related sites
+
+**Getting help**
+
+-   [Google it!](http://lmgtfy.com/?q=R+Error+in+library+there+is+no+package+called): Try Googling any error messages you get. It's not cheating and everyone does it! You'll be surprised how many other people have probably had the same problem and solved it.
+-   [Stack Overflow](http://stackoverflow.com/questions/tagged/r): There are many thousands of questions relevant to R on Stack Overflow. [Here](https://stackoverflow.com/questions/tagged/r?sort=votes) are the most popular ones, ranked by vote. Make sure you search for similar questions before asking your own, and make sure you include a [reproducible example](http://stackoverflow.com/questions/5963269/how-to-make-a-great-r-reproducible-example/5963610#5963610) to get the most useful advice. A reproducible example is a minimal example that lets others who are trying to help you to see the error themselves.
+
+**R markdown resources**
+
+-   [Basic markdown and R markdown reference](http://bioconnector.github.io/markdown)
+-   [A good markdown reference](https://commonmark.org/help/)
+-   [A good 10-minute markdown tutorial](https://commonmark.org/help/tutorial/)
+-   [RStudio's R markdown cheatsheet](https://rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf)
+-   [R markdown reference sheet](https://rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf)
+-   [The R markdown documentation](https://rmarkdown.rstudio.com/docs/) including a [getting started guide](https://rmarkdown.rstudio.com/lesson-1.html), a [gallery of demos](https://rmarkdown.rstudio.com/gallery.html), and several [articles](https://rmarkdown.rstudio.com/articles.html) for more advanced usage.
+-   [The knitr website](http://yihui.name/knitr/) has lots of useful reference material about how knitr works.
+
+**Git and GitHub resources**
+
+-   [Happy Git](https://happygitwithr.com/): Great resource for using Git and GitHub
+-   [Version control with RStudio](https://support.rstudio.com/hc/en-us/articles/200532077-Version-Control-with-Git-and-SVN): RStudio document for using version control
+-   [Using Git from RStudio](https://nceas.github.io/oss-lessons/version-control/4-getting-started-with-git-in-RStudio.html): Good 10 minute guide
+-   [The R Class](https://r-bio.github.io/intro-git-rstudio/): In depth guide to using Git and GitHub with RStudio
+
+**R programming**
+
+-   [R Programming for Data Science](https://bookdown.org/rdpeng/rprogdatascience/): In depth guide to R programming
+-   [R for Data Science](https://r4ds.had.co.nz/): Fantastic book, tidyverse orientated
+
+## 1.5 R Packages
+
+``` r
+install.packages()
+# CRAN function: downloads packages from CRAN
+```
+
+``` r
+dependencies=TRUE
+# argument: additional packages that are required will be installed
+```
+
+``` r
+update.packages()
+# function: update previously installed packages
+```
+
+``` r
+ask=FALSE
+# argument: avoids having to confirm every package download
+```
+
+``` r
+BiocManager::install(c("...","..."))
+# BiocManager function: install specific packages "…"
+```
+
+``` r
+remotes::install_github('username/repository')
+# GitHub function: install specific packages
+```
+
+``` r
+library(...)
+# using packages: load wanted packages "…" for new R session
+```
+
+## 1.7 Working directories
+
+``` r
+getwd()
+# function: returns file path of the current working directory (i.e. location within finder)
+```
+
+``` r
+dataf <- read.table (".../...")
+# function: import sm else's datafile "subdirectory/…txt" via relative file path
+
+## e.g.
+dataf <- read.table('raw_data/mydata.txt', header = TRUE, 
+                      sep = '\t')
+```
+
+``` r
+here()
+# function: build file paths for any file relative to the project root directory
+
+## e.g. "raw_data" = subdirectory, "mydata.txt" = datafile
+library(here)
+dataf <- read.table(here("raw_data", "mydata.txt"), 
+                     header = TRUE, sep = '\t',
+                    stringsAsFactors = TRUE)
+```
+
+## 1.8 Directory structure
+
+**Root** - project directory containing .Rproj file
+
+**data** - data
+
+**raw data** - READ ONLY/unprocessed data files
+
+**processed data**
+
+**metadata** - info about data collection method, details of data download etc
+
+**R** - optional directory for *custom R functions*
+
+**Rmd** - optional directory for *R markdown documents*
+
+**scripts** - all of main R scripts for current projects
+
+**output** - outputs from R scripts (e.g. plots, HTML files. data summaries)
+
+## 1.10 Project documentation
+
+``` r
+#
+# comment
+
+## comment multiple lines by highlighting lines of text then 'cmd + shift+ c', uncomment by 'cmd + shift + c'
+
+## e.g.
+# Title: Time series analysis of snouters
+
+# Purpose : This script performs a time series analyses on 
+#           snouter count data.
+#           Data consists of counts of snouter species 
+#           collected from 18 islands in the Hy-yi-yi 
+#           archipelago between 1950 and 1957. 
+#           For details of snouter biology see:
+#           https://en.wikipedia.org/wiki/Rhinogradentia
+
+# Project number: #007
+
+# DataFile:'data/snouter_pop.txt'
+
+# Author: A. Nother
+# Contact details: a.nother@uir.ac.uk
+
+# Date script created: Mon Dec 2 16:06:44 2019 -----------
+# Date script last modified: Thu Dec 12 16:07:12 2019 ----
+
+# package dependencies
+library(PopSnouter)
+library(ggplot2)
+
+print('put your lovely R code here')
+
+# good practice to include session information
+
+xfun::session_info()
+```
+
+``` r
+sessionInfo()
+xfun::session_info()
+# function: provides R version, details of operating system and loaded packages
+## (xfun package for more concise summary)
+```
+
+``` r
+ts
+# time stamp function + 'shift + tab' keys
+```
+
+**README file** - text file to record important information (i.e. abt data collection/background)
+
+(in R studio `File` -\> `New File` -\> `Text File` menu.)
+
+## 1.11 R style guide
+
+<https://google.github.io/styleguide/Rguide.html>
+
+Google prefers identifying functions with `BigCamelCase` to clearly distinguish them from other objects.
+
+`# Good DoNothing <- function() {   return(invisible(NULL)) }`
+
+The names of private functions should begin with a dot. This helps communicate both the origin of the function and its intended use.
+
+`# Good .DoNothingPrivately <- function() {   return(invisible(NULL)) }`
+
+We previously recommended naming objects with `dot.case`. We're moving away from that, as it creates confusion with S3 methods.
+
+### **Don't use attach()**
+
+The possibilities for creating errors when using `attach()` are numerous.
+
+## **Pipes**
+
+### **Right-hand assignment**
+
+We do not support using right-hand assignment.
+
+`# Bad iris %>%   dplyr::summarize(max_petal = max(Petal.Width)) -> results`
+
+This convention differs substantially from practices in other languages and makes it harder to see in code where an object is defined. E.g. searching for `foo <-` is easier than searching for `foo <-` and `-> foo`(possibly split over lines).
+
+### **Use explicit returns**
+
+Do not rely on R's implicit return feature. It is better to be clear about your intent to `return()` an object.
+
+\`# Good AddValues \<- function(x, y) { return(x + y) }
+
+# Bad
+
+AddValues \<- function(x, y) { x + y }\`
+
+### **Qualifying namespaces**
+
+Users should explicitly qualify namespaces for all external functions.
+
+`# Good purrr::map()`
+
+We discourage using the `@import` Roxygen tag to bring in all functions into a NAMESPACE. Google has a very big R codebase, and importing all functions creates too much risk for name collisions.
+
+While there is a small performance penalty for using `::`, it makes it easier to understand dependencies in your code. There are some exceptions to this rule.
+
+-   Infix functions (`%name%`) always need to be imported.
+-   Certain `rlang` pronouns, notably `.data`, need to be imported.
+-   Functions from default R packages, including `datasets`, `utils`, `grDevices`, `graphics`, `stats` and `methods`. If needed, you can `@import` the full package.
+
+When importing functions, place the `@importFrom` tag in the Roxygen header above the function where the external dependency is used.
+
+## **Documentation**
+
+### **Package-level documentation**
+
+All packages should have a package documentation file, in a `packagename-package.R` file.
+
+OR
+
+\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*use styler package\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*
+
+highlight lines of code → addins → style selection
+
+## 1.13 Citing R
+
+``` r
+citation()
+# function: latest citation for R
+```
+
+``` r
+citation(package="...")
+# function: cite a particular package
+```
+
+# Chapter 2
+
+## Some R Basics
+
+Useful tips from website:
+
+-   R is case sensitive i.e. `A` is not the same as `a` and `anova` is not the same as `Anova`.
+-   Anything that follows a `#` symbol is interpreted as a comment and ignored by R. Comments should be used liberally throughout your code for both your own information and also to help your collaborators. Writing comments is a bit of an [art](https://en.wikipedia.org/wiki/Comment_(computer_programming)) and something that you will become more adept at as your experience grows.
+-   In R, commands are generally separated by a new line. You can also use a semicolon `;` to separate your commands but this is rarely used.
+-   If a continuation prompt `+` appears in the console after you execute your code this means that you haven't completed your code correctly. This often happens if you forget to close a bracket and is especially common when nested brackets are used (`(((some command))`). Just finish the command on the new line and fix the typo or hit escape on your keyboard (see point below) and fix.
+-   In general, R is fairly tolerant of extra spaces inserted into your code, in fact using spaces is actively encouraged. However, spaces should not be inserted into operators i.e. `<-` should not read `< -`(note the space). See Google's [style guide](https://google.github.io/styleguide/Rguide.html) for advice on where to place spaces to make your code more readable.
+-   If your console 'hangs' and becomes unresponsive after running a command you can often get yourself out of trouble by pressing the escape key (esc) on your keyboard or clicking on the stop icon in the top right of your console. This will terminate most current operations.
+
+## 2.1 Getting started
+
+ `[1]` in front of results = observation number (i.e. first observation)
+
+arithmetic operators:
+
+`+` is addition
+
+`-` is subtraction
+
+`*` is multiplication
+
+`/` is division
+
+mathematical functions (not exhaustive):
+
+`log()`, `log10()`, `exp()`, `sqrt()`
+
+also pi, \^(power)
+
+### vectorisation
+
+``` r
+# create a vector
+ex_vec <- c(4, 8, 12, 3, 9, 32)
+
+# multiply each element by 3
+ex_vec * 3
+[1] 12 24 36  9 27 96
+
+# create a second vector
+ex_vec2 <- c(4, 10, 13, 17, 8, 7)
+
+# adding both vectors
+ex_vec + ex_vec2
+[1]  8 18 25 20 17 39
+
+# multiplying both vectors
+ex_vec * ex_vec2
+[1]  16  80 156  51  72 224
+
+# vectorisation with vectors of different lenghts will quietly recycle the 
+# elements of the shorter vector (rather than an error)
+
+# create a third vector
+ex_vec3 <- c(3, 4)
+ex_vec2 + ex_vec3
+[1]  7 14 16 21 11 11
+```
+
+## 2.2 Objects in R
+
+to create an object: *assignment operator* `<-` (sometimes called the *gets operator*)
+
+(= also works but is bad practice)
+
+``` r
+object <- ...
+```
+
+... is value; i.e. object gets ...
+
+-   can't name object starting with a number
+-   can't contain special characters like /!?
+-   don't include spaces
+
+``` r
+# enter object name to view value
+object
+## [1] 48
+```
+
+-   all objects in the current project will be stored under the environment tab
+
+    -   grid view shows a summary (i.e. type, length, size, value)
+
+    -   list view shows name and value
+
+-   reassign value to object to change the value of an existing object
+
+-   objects can be operated under one object (numeric)
+
+[types of values:]{.underline}
+
+*numeric*: e.g. 3
+
+*character string*: e.g. "happy birthday"
+
+[types of error messages:]{.underline}
+
+`Error: object 'XXX' not found`
+
+## 2.3 Using functions in R
+
+when using a function:
+
+-   always have brackets after function name
+    -   function without brackets displays the function's content
+    -   ?function displays the help file associated with the function
+-   arguments are placed in brackets and separated by commas
+
+``` r
+c(...,...,...)
+obj <- c(...,...,...)
+# function: concatenate, creates vectors that contain the same type of data
+```
+
+... is referred to as elements or components
+
+-   measures like central tendency can be found
+
+``` r
+mean(obj) #returns mean of obj
+var(obj) # returns variance of obj
+sd(obj) # returns standard deviation of obj
+length(obj) #returns the number of elements in obj
+# note: remember to assign ^ values to new objects to use in further analysis i.e. obj_mean
+```
+
+``` r
+number:number
+# function: regular sequence of whole numbers in steps of 1, e.g., 1:10, 10:1
+```
+
+``` r
+seq(from = ..., to = ..., by = ...)
+# function: sequence of numbers with specified increments
+```
+
+``` r
+rep(c(...), times = ...)
+my_seq3 <- rep(2, times = 10)   # repeats 2, 10 times
+my_seq3
+##  [1] 2 2 2 2 2 2 2 2 2 2
+my_seq4 <- rep("abc", times = 3)    # repeats ‘abc’ 3 times 
+my_seq4
+## [1] "abc" "abc" "abc"
+
+#function: repeats values (numeric + non-numeric) how many times
+```
+
+also able to repeat elements of a series, each element of a series, and non-sequential series how many times
+
+``` r
+my_seq6 <- rep(1:5, each = 3)   # repeats each element of the 
+                              #series 3 times
+my_seq6
+##  [1] 1 1 1 2 2 2 3 3 3 4 4 4 5 5 5
+
+my_seq5 <- rep(1:5, times = 3)  # repeats the series 1 to 
+                                # 5, 3 times
+my_seq5
+##  [1] 1 2 3 4 5 1 2 3 4 5 1 2 3 4 5
+
+my_seq7 <- rep(c(3, 1, 10, 7), each = 3) # repeats each 
+                                         # element of the 
+                                         # series 3 times
+my_seq7
+##  [1]  3  3  3  1  1  1 10 10 10  7  7  7
+```
+
+## 2.4 Working with vectors
+
+*example obj to work with:*
+
+``` r
+ex_obj <- c(34, 12, 58, 70, 73, 96)
+
+ex_obj
+[1] 34 12 58 70 73 96
+```
+
+``` r
+[] #extract values from a vector
+
+ex_obj[5] #extract the 5th value
+[1] 73
+
+# to store an extracted value in another object
+ex_obj_val5 <- ex_obj[5]
+ex_obj_val5
+[1] 73
+
+## note: positional index starts at 1 rather than 0 (some other programming languages start w 1, e.g., Python)
+```
+
+``` r
+# to extract multiple values at once with c()
+
+ex_obj[c(1,5,6)] #extracting 1st, 5th ad 6th element of ex_obj
+[1] 34 73 96
+
+# to extract a range of values with :
+
+ex_obj[2:6] #extracting from 2nd element to 6th element
+[1] 12 58 70 73 96
+```
+
+### logical index
+
+``` r
+>
+# to extract elements with a value greater than ...
+
+ex_obj[ex_obj>35] #extracting elements with a value greater than 35
+[1] 58 70 73 96
+```
+
+*behind the logical expression:*
+
+``` r
+ex_obj>35 #returns a vector containing either TRUE or FALSE corresponding
+                    # to whether the logical condition satisfied for each element
+[1] FALSE FALSE  TRUE  TRUE  TRUE  TRUE
+
+#so ex_obj[ex_obj>35] is equivalent to
+ex_obj[c(FALSE, FALSE,  TRUE,  TRUE,  TRUE,  TRUE)]
+[1] 58 70 73 96
+
+#similarly
+ex_obj[c(TRUE, TRUE,  FALSE,  FALSE,  FALSE,  FALSE)]
+[1] 34 12
+```
+
+composite operators:
+
+``` r
+ex_obj[ex_obj >= 34]  # values greater or equal to 34
+[1] 34 58 70 73 96
+
+ex_obj[ex_obj < 34]   # values less than 34
+[1] 12
+
+ex_obj[ex_obj <= 34]  # values less than or equal to 34
+[1] 34 12
+
+ex_obj[ex_obj == 34]  # values equal to 34
+[1] 34
+    > ex_obj[ex_obj == 35]
+    numeric(0)
+
+ex_obj[ex_obj != 34]  # values not equal to 34
+[1] 12 58 70 73 96
+```
+
+combining with Boolean expressions:
+
+``` r
+& # means AND
+| # means OR
+
+# extracting values in ex_obj less than 72 AND greater than 15
+ex_obj[ex_obj < 72 & ex_obj > 15]
+[1] 34 58 70
+
+# extracting values in ex_obj less than 50 OR greater than 75
+ex_obj[ex_obj < 50 | ex_obj > 75]
+[1] 34 12 96
+```
+
+replacing elements:
+
+``` r
+# replacing 3rd value of ex_obj from 58 to 60
+
+ex_obj <- c(34, 12, 58, 70, 73, 96)  #reminder
+
+ex_obj[3] <- 60
+ex_obj
+[1] 34 12 60 70 73 96
+
+# replacing more than one value
+# replacing 4th and 5th element with 82
+
+ex_obj[c(4,5)] <- 82
+ex_obj
+[1] 34 12 60 82 82 96
+
+# replacing values based on a logical expression
+# replace elements that are not equal to 82 with 40
+
+ex_obj[ex_obj != 82] <- 40
+ex_obj
+[1] 40 40 40 82 82 40
+```
+
+sorting elements:
+
+``` r
+# sorting a vector from lowest to highest value
+sort()
+
+ex_obj_sort <- sort(ex_obj)
+ex_obj_sort
+[1] 40 40 40 40 82 82
+
+# sorting a vector from highest to lowest value
+
+ex_obj_sort2 <- sort(ex_obj, decreasing = TRUE)
+ex_obj_sort2
+[1] 82 82 40 40 40 40
+
+# or reverse the sort function with reverse function
+rev()
+ex_obj_sort3 <- rev(sort(ex_obj))
+ex_obj_sort3
+[1] 82 82 40 40 40 40
+```
+
+ordering elements:
+
+``` r
+# sorting a vector according to the values of another vector
+order() with []
+
+height <- c(180, 155, 160, 167, 181)
+height
+[1] 180 155 160 167 181
+
+p.names <- c("Joanna", "Charlotte", "Helen", "Karen", "Amy")
+p.names
+[1] "Joanna"    "Charlotte" "Helen"     "Karen"     "Amy"
+
+# ordering people in ascending order of their height
+
+height_ord <- order(height)
+height_ord
+[1] 2 3 4 1 5 # positional indices of vector in ascending order
+                            # i.e. smallest height is 2nd element of vector
+
+names_ord <- p.names[height_ord]
+names_ord
+[1] "Charlotte" "Helen"     "Karen"     "Joanna"    "Amy"
+```
+
+missing data:
+
+``` r
+# missing data is usually represented by NA symbol for 'Not Available'
+
+#calculating mean of a vector with NA values
+
+rating <- c(1, 5, 9, 7, NA, 2, 8, 3, NA, 6)
+rating
+[1]  1  5  9  7 NA  2  8  3 NA  6
+
+mean_rating <- mean(rating)
+mean_rating
+[1] NA   # R doesn't know whether to ignore NA values or not
+
+# na.rm 
+# a logical evaluating to TRUE or FALSE indicating whether NA values should 
+# be stripped before the computation proceeds.
+# set to FALSE by default
+
+mean_rating <- mean(rating, na.rm = TRUE)
+mean_rating
+[1] 5.125
+```
+
+note: help file associated with any function will **always** indicate how missing data are handled by default
+
+-   **Description:** gives a brief description of the function and what it does.
+-   **Usage:** gives the name of the arguments associated with the function and possible default values.
+-   **Arguments:** provides more detail regarding each argument and what they do.
+-   **Details:** gives further details of the function if required.
+-   **Value:** if applicable, gives the type and structure of the object returned by the function or the operator.
+-   **See Also:** provides information on other help pages with similar or related content.
+-   **Examples:** gives some examples of using the function. These are really helpful, all you need to do is copy and paste them into the console to see what happens. You can also access examples at any time by using the `example()` function (i.e. `example("mean")`)
+
+``` r
+help.search("...") # use this when not sure of the name of the function but 
+                   # can remember a keyword
+# equivalent shortcut
+??...
+
+apropos("...") # list all functions containing a specified character string
+
+apropos("mean")
+ [1] ".colMeans"     ".rowMeans"     "colMeans"      "kmeans"       
+ [5] "mean"          "mean_temp"     "mean.Date"     "mean.default" 
+ [9] "mean.difftime" "mean.POSIXct"  "mean.POSIXlt"  "rowMeans"     
+ [13] "vec_mean"      "weighted.mean"
+
+RSiteSearch("...") # searches for keywords and phrases in function help pages
+                                # and vignettes for all CRAN packages, and in CRAN task views
+```
+
+saving an object as a .RData file:
+
+``` r
+save()
+# save one object into a .RData file
+save(nameOfObject, file = "name_of_file.RData")
+
+# save all of objects in workspace into one .RData file
+save.image()
+save.image(file = "name_of_file.RData") 
+
+# load .RData file back into RStudio 
+load()
+load(file = "name_of_file.RData")
+
+save(ex_vec, file = "230913ex_vec.RData")
+save.image(file = "230913objects.RData")
+```
+
+# Chapter 3
+
+## 3.1 Data types
+
+*Types of data:*
+
+| Numeric   | numbers that contain a decimal (or whole numbers)                                                                    |
+|------------------------------------|------------------------------------|
+| Integer   | whole numbers (no decimal point)                                                                                     |
+| Logical   | value is either TRUE or FALSE. also NA to represent missing values                                                   |
+| Complex   | made up of a real number and imaginary number (i)                                                                    |
+| Character | represents string values (e.g., word). also factor - string but with additional attributes (like levels or an order) |
+
+``` r
+class() # find out type/class of any object
+
+num <- 2.2
+class(num)
+[1] "numeric"
+
+char <- "hello"
+class(char)
+[1] "character"
+
+logi <- TRUE
+class(logi)
+[1] "logical"
+```
+
+or ask a question abt the type with logical test
+
+``` r
+is.[classOfData]() # will return TRUE or FALSE
+
+is.numeric(num)
+[1] TRUE
+
+is.character(num)
+[1] FALSE
+
+is.character(char)
+[1] TRUE
+
+is.logical(logi)
+[1] TRUE
+```
+
+coercion functions
+
+| Type      | Logical test | Coercing     |
+|-----------|--------------|--------------|
+| Character | is.character | as.character |
+| Numeric   | is.numeric   | as.numeric   |
+| Logical   | is.logical   | as.logical   |
+| Factor    | is.factor    | as.factor    |
+| Complex   | is.complex   | as.complex   |
+
+``` r
+# coerce numeric to character
+class(num)
+[1] "numeric"
+num_char <-  as.character(num)
+num_char
+[1] "2.2"
+class(num_char)
+[1] "character"
+
+# coerce character to numeric!
+class(char)
+[1] "character"
+char_num <- as.numeric(char)
+Warning: NAs introduced by coercion
+```
+
+## 3.2 Data structures
+
+![](images/Screenshot 2023-11-08 at 9.00.41 pm.png){width="221"}
+
+![](images/Screenshot 2023-11-08 at 9.01.58 pm.png){width="378"}
+
+**scalars** - vectors that have a single value
+
+**vectors** can contain (not a mixture, except NA):
+
+-   numbers
+-   characters
+-   factors
+-   logicals
+
+**matrices** - a vector that has dimensions (all elements must be of the same data class)
+
+-   used in population ecology, theoretical and applied statistics
+
+``` r
+matrix()
+
+# sequence 1 to 16, in 4 rows, fill matrix row-wise (default is column-wise)
+my_mat <- matrix(1:16, nrow = 4, byrow = TRUE) 
+```
+
+**array** - multidimensional matrices (all elements must be of the same data class)
+
+``` r
+array()
+
+# sequence 1 to 16, in 2 rows, 4 columns and 2 different matrices
+# define dimensions using dim = ... argument
+my_array <- array(1:16, dim = c(2, 4, 2))
+my_array
+, , 1 
+      [,1] [,2] [,3] [,4]
+[1,]    1    3    5    7
+[2,]    2    4    6    8
+
+, , 2 
+      [,1] [,2] [,3] [,4]
+[1,]    9   11   13   15
+[2,]   10   12   14   16
+```
+
+naming rows and columns:
+
+``` r
+rownames()
+colnames()
+
+rownames(my_mat) <- c("A", "B", "C", "D")
+colnames(my_mat) <- c("a", "b", "c", "d")
+my_mat
+   a  b  c  d
+A  1  2  3  4
+B  5  6  7  8
+C  9 10 11 12
+D 13 14 15 16
+```
+
+*matrix operations:*
+
+``` r
+transposition function # exchange places
+t()
+
+my_mat_t <- t(my_mat)
+my_mat_t
+  A B  C  D
+a 1 5  9 13
+b 2 6 10 14
+c 3 7 11 15
+d 4 8 12 16
+```
+
+``` r
+extracting diagonal elements of a matrix into a vector
+diag()
+
+my_mat_diag <- diag(my_mat)
+my_mat_diag
+[1]  1  6 11 16
+```
+
+``` r
+addition, multiplication, etc
+
+mat.1 <- matrix(c(2, 0, 1, 1), nrow = 2)    # notice that the matrix has been filled 
+mat.1                                     # column-wise by default
+     [,1] [,2]
+[1,]    2    1
+[2,]    0    1
+
+mat.2 <- matrix(c(1, 1, 0, 2), nrow = 2)
+mat.2
+     [,1] [,2]
+[1,]    1    0
+[2,]    1    2
+
+mat.1 + mat.2           # matrix addition
+     [,1] [,2]
+[1,]    3    1
+[2,]    1    3
+
+mat.1 * mat.2           # element by element products
+     [,1] [,2]
+[1,]    2    0
+[2,]    0    2
+
+mat.1 %*% mat.2         # matrix multiplication
+     [,1] [,2]
+[1,]    3    2
+[2,]    1    2
+```
+
+note: matrix multiply by row x column
+
+-   must: no. of columns in first matrix = no. of rows in second matrix
+
+-   resultant matrix has (no. of rows in first matrix) of rows x (no. of columns in second matrix) of columns
+
+**list** - data structure that can store mixtures of data types (including vectors, arrays, list)
+
+``` r
+list()
+
+list_1 <- list(c("black", "yellow", "orange"),
+               c(TRUE, TRUE, FALSE, TRUE, FALSE, FALSE),
+               matrix(1:6, nrow = 3))
+list_1
+[[1]]
+[1] "black"  "yellow" "orange"
+
+[[2]]
+[1]  TRUE  TRUE FALSE  TRUE FALSE FALSE
+
+[[3]]
+     [,1] [,2]
+[1,]    1    4
+[2,]    2    5
+[3,]    3    6
+```
+
+elements of the list can be named during the construction of the list
+
+``` r
+list_2 <- list(colours = c("black", "yellow", "orange"),
+               evaluation = c(TRUE, TRUE, FALSE, TRUE, FALSE, FALSE),
+               time = matrix(1:6, nrow = 3))
+
+list_2
+$colours
+[1] "black"  "yellow" "orange"
+
+$evaluation
+[1]  TRUE  TRUE FALSE  TRUE FALSE FALSE
+
+$time
+     [,1] [,2]
+[1,]    1    4
+[2,]    2    5
+[3,]    3    6
+```
+
+or after the list has been created using the `names()` function
+
+``` r
+names(list_1) <- c("colours", "evaluation", "time")
+list_1
+$colours
+[1] "black"  "yellow" "orange"
+
+$evaluation
+[1]  TRUE  TRUE FALSE  TRUE FALSE FALSE
+
+$time
+     [,1] [,2]
+[1,]    1    4
+[2,]    2    5
+[3,]    3    6
+```
+
+**data frame** - a data structure that is a two-dimensional object (rows & columns) that can contain a mixture of different types of data (special type of list)
+
+-   each row or column can only have one data type but data type can be different between rows or columns (unlike matrix)
+-   rectangular data (tidy data; use NA for missing data, unlike list)
+
+``` r
+data.frame()
+
+p.height <- c(180, 155, 160, 167, 181)
+p.weight <- c(65, 50, 52, 58, 70)
+p.names <- c("Joanna", "Charlotte", "Helen", "Karen", "Amy")
+
+dataf <- data.frame(height = p.height, weight = p.weight, names = p.names)
+dataf
+  height weight     names
+1    180     65    Joanna
+2    155     50 Charlotte
+3    160     52     Helen
+4    167     58     Karen
+5    181     70       Amy
+
+dim(dataf)
+[1] 5 3 # 5 rows and 3 columns
+```
+
+note: the first "column" of the data frame is the name of each row e.g. row 1
+
+``` r
+str() # structure function: provides a compact summary of object
+
+str(dataf)
+'data.frame':   5 obs. of  3 variables: 
+$ height: num  180 155 160 167 181 
+$ weight: num  65 50 52 58 70 
+$ names : chr  "Joanna" "Charlotte" "Helen" "Karen" ...
+```
+
+note: this summary is useful; should place at the beginning of script with comments for easy reference
+
+``` r
+to convert strings to factors under the data.frame() function
+include argument stringAsFactors = TRUE
+
+p.height <- c(180, 155, 160, 167, 181)
+p.weight <- c(65, 50, 52, 58, 70)
+p.names <- c("Joanna", "Charlotte", "Helen", "Karen", "Amy")
+
+dataf <- data.frame(height = p.height, weight = p.weight, names = p.names, 
+                                        stringsAsFactors = TRUE)
+
+str(dataf)
+'data.frame':   5 obs. of  3 variables: 
+$ height: num  180 155 160 167 181 
+$ weight: num  65 50 52 58 70 
+$ names : Factor w/ 5 levels "Amy","Charlotte",..: 4 2 3 5 1
+```
+
+💡 question: \^ what does 4 2 3 5 1 mean
+
+answer: the alphabetical order of the factors (e.g. Joanna is 4th alphabetically)
+
+## 3.3 Importing data
+
+save data entered on a spreadsheet (e.g. excel) as a *tab delimited file*
+
+⇒ file with '.txt' extension (or '.tsv' for tab separated values)
+
+**In Excel: File → Save as... → *choose folder* → *enter file name (short, no spaces) → File format: 'Text(Tab delimited)'***
+
+note:
+
+-   keep excel column headings short and informative
+-   avoid spaces and special characters
+-   replace missing values with NA
+
+``` r
+read.table() # a function to import data into R
+
+flowers <- read.table(file = 'data/flower.txt', header = TRUE, sep = "\t",
+                        stringsAsFactors = TRUE)
+# file path 'data/flower.txt' needs to be encased by '' or ""
+
+# header = TRUE specifies the first row of data contains the variable names
+# e.g. dependent variable headings
+# if not, specify header = FALSE or omit as it is default
+# view names of variables in the data frame with names() function
+
+# sep = "\t" argument tells R that the file delimiter is a tab (\t)
+
+# other arguments
+
+dec = 
+# change default charcter (.) used for a decimal point
+# useful for contexts where decimal places are usually represented by a comma
+# dec = ","
+
+na.strings = 
+# import data where missing values are represented with a symbol toher than NA
+# useful for contexts where missing data is denoted with * instead of NA
+# na.strings = "*"
+```
+
+note: delimiter is one or more characters that separate text strings (e.g. commas, semicolon, quotes, pipes, braces, slashes)
+
+``` r
+variations of read.table() function to import different file types
+
+# import .csv file
+flowers <- read.csv(file = 'data/flower.csv') 
+
+# import .csv file with dec = "," and sep = ";"
+flowers <- read.csv2(file = 'data/flower.csv') 
+
+# import tab delim file with sep = "\t"
+flowers <- read.delim(file = 'data/flower.txt')
+```
+
+note: try not to import data directly from statisti
+
+if must, install `foreign` package which has functions for importing Minitab, SPSS, Stata and SAS files or the `xlsx` package to import Excel spreadsheets
+
+\*\*\*\*\*\*\*\*common mistakes when importing\*\*\*\*\*\*\*\*
+
+``` r
+Error in file(file, "rt") : cannot open the connection
+In addition: Warning message:
+In file(file, "rt") :
+  cannot open file 'flower.txt': No such file or directory
+```
+
+-   spelling of filename or file path is wrong
+
+-   forgotten to include the file extension in the file name (i.e., .txt)
+
+-   file is in the wrong location
+
+-   incorrect file path
+
+-   forgotten to include the `header = TRUE` argument when the first row of the data contains variable names
+
+    -   instead, variables are imported as factors
+
+\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*Other import options\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*
+
+``` r
+fread() function
+# importing large data files quickly and efficiently
+# automatically detects many of the arguments wld otherwise specify (e.g. sep = )
+
+library(read.table)
+all_data <- fread(file = 'data/flower.txt')
+```
+
+note: fread() returns a data.table object, NOT a data.frame object
+
+-   a data.table object can pass any function that only accepts data.frame objects
+
+``` r
+readr package
+# also useful for large data files
+# used in a similar way to read.table() or read.csv()
+
+read_table() function
+# header = TRUE replaced by col_names = TRUE
+# returns a tibble class object (tidyverse equivalent of a data.frame object)
+
+library(readr)
+# import white space delimited files
+all_data <- read_table(file = 'data/flower.txt', col_names = TRUE)
+
+# import comma delimited files
+all_data <- read_csv(file = 'data/flower.txt')
+
+# import tab delimited files
+all_data <- read_delim(file = 'data/flower.txt', delim = "\t")
+
+# or use
+all_data <- read_tsv(file = 'data/flower.txt')
+```
+
+``` r
+ff package or bigmemory package
+# useful for HUGE data files
+```
+
+note: find out more about these functions [here](https://www.rdocumentation.org/packages/ff/versions/2.2-14/topics/read.table.ffdf) and [here](https://cran.r-project.org/web/packages/bigmemory/bigmemory.pdf).
+
+## 3.4 Wrangling data frames (not completed)
+
+## 3.5 Summarising data frames
+
+``` r
+summary() function
+# provides summary statistics of all the variables in data frame
+
+summary(flowers)
+##     treat             nitrogen      block         height           weight      
+##  Length:96          low   :32   Min.   :1.0   Min.   : 1.200   Min.   : 5.790  
+##  Class :character   medium:32   1st Qu.:1.0   1st Qu.: 4.475   1st Qu.: 9.027  
+##  Mode  :character   high  :32   Median :1.5   Median : 6.450   Median :11.395  
+##                                 Mean   :1.5   Mean   : 6.840   Mean   :12.155  
+##                                 3rd Qu.:2.0   3rd Qu.: 9.025   3rd Qu.:14.537  
+##                                 Max.   :2.0   Max.   :17.200   Max.   :23.890  
+##     leafarea       shootarea         flowers      
+##  Min.   : 5.80   Min.   :  5.80   Min.   : 1.000  
+##  1st Qu.:11.07   1st Qu.: 39.05   1st Qu.: 4.000  
+##  Median :13.45   Median : 70.05   Median : 6.000  
+##  Mean   :14.05   Mean   : 79.78   Mean   : 7.062  
+##  3rd Qu.:16.45   3rd Qu.:113.28   3rd Qu.: 9.000  
+##  Max.   :49.20   Max.   :189.60   Max.   :17.000
+
+# if a variable contains missing data, then the number of NA values is 
+# also reported
+```
+
+``` r
+# summarising a smaller subset of variables in data frame
+
+# summarising only 'height', 'weight', 'leafarea' and 'shootarea' variables
+# i.e. column indexes 4:7
+
+summary(flowers[, 4:7])
+##      height           weight          leafarea       shootarea     
+##  Min.   : 1.200   Min.   : 5.790   Min.   : 5.80   Min.   :  5.80  
+##  1st Qu.: 4.475   1st Qu.: 9.027   1st Qu.:11.07   1st Qu.: 39.05  
+##  Median : 6.450   Median :11.395   Median :13.45   Median : 70.05  
+##  Mean   : 6.840   Mean   :12.155   Mean   :14.05   Mean   : 79.78  
+##  3rd Qu.: 9.025   3rd Qu.:14.537   3rd Qu.:16.45   3rd Qu.:113.28  
+##  Max.   :17.200   Max.   :23.890   Max.   :49.20   Max.   :189.60
+
+# or equivalently 
+# summary(flowers[, c("height", "weight", "leafarea", "shootarea")])
+```
+
+``` r
+# summarising a single variable
+
+summary('dataframe'$variable)
+
+summary(flowers$leafarea)
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##    5.80   11.07   13.45   14.05   16.45   49.20
+
+# or equivalently
+# summary(flowers[, 6])
+```
+
+``` r
+table() function
+# to generate tables of counts
+# i.e. for no. of observatiosn in each level of factor variables
+
+table('dataframe'$variable)
+
+table(flowers$nitrogen)
+## 
+##    low medium   high 
+##     32     32     32
+
+# combination of factor levels from different variables
+
+table('dataframe'$variable1, 'dataframe'$variable2)
+
+table(flowers$nitrogen, flowers$treat)
+##         
+##          notip tip
+##   low       16  16
+##   medium    16  16
+##   high      16  16
+```
+
+``` r
+xtabs() function
+# more flexible version of table() function
+
+xtabs(~ variable1 + variable2, data = 'dataframe')
+# ~; formula notation to build contingency tables
+# +; separates cross-classifying variables
+
+xtabs(~ nitrogen + treat, data = flowers)
+##         treat
+## nitrogen notip tip
+##   low       16  16
+##   medium    16  16
+##   high      16  16
+
+xtabs(~ nitrogen + treat + block, data = flowers)
+## , , block = 1
+## 
+##         treat
+## nitrogen notip tip
+##   low        8   8
+##   medium     8   8
+##   high       8   8
+## 
+## , , block = 2
+## 
+##         treat
+## nitrogen notip tip
+##   low        8   8
+##   medium     8   8
+##   high       8   8
+
+# note: xtabs() has quietly coerced 'block' variable to a factor
+
+ftable(xtabs(......))
+# 'flatten' table for nicer formatted table
+
+ftable(xtabs(~ nitrogen + treat + block, data = flowers))
+##                block 1 2
+## nitrogen treat          
+## low      notip       8 8
+##          tip         8 8
+## medium   notip       8 8
+##          tip         8 8
+## high     notip       8 8
+##          tip         8 8
+```
+
+``` r
+tapply() function
+# summarise data for each level of a factor variable with a function (e.g. mean)
+
+tapply(flowers$height, flowers$nitrogen, mean)
+##      low   medium     high 
+## 5.853125 7.012500 7.653125
+
+tapply(flowers$height, flowers$nitrogen, sd)
+##      low   medium     high 
+## 2.828425 3.005345 3.483323
+tapply(flowers$height, flowers$nitrogen, summary)
+## $low
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.800   3.600   5.550   5.853   8.000  12.300 
+## 
+## $medium
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.800   4.500   7.000   7.013   9.950  12.300 
+## 
+## $high
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.200   5.800   7.450   7.653   9.475  17.200
+
+# if na.rm = TRUE, add as an argument
+tapply(flowers$height, flowers$nitrogen, mean, na.rm = TRUE)
+##      low   medium     high 
+## 5.853125 7.012500 7.653125
+```
+
+``` r
+# tapply () with multiple factors
+# factors must be supplied in the form of a list; list ()
+
+tapply(flowers$height, list(flowers$nitrogen, flowers$treat), mean)
+##          notip    tip
+## low    3.66875 8.0375
+## medium 4.83750 9.1875
+## high   5.70625 9.6000
+```
+
+``` r
+# can be simplified by nesting tapply() inside with() function
+with('dataframe', tapply(variable1, list(factor1, factor2), function))
+
+with(flowers, tapply(height, list(nitrogen, treat), mean))
+##          notip    tip
+## low    3.66875 8.0375
+## medium 4.83750 9.1875
+## high   5.70625 9.6000
+```
+
+``` r
+aggregate() function
+# more flexible than tapply()
+
+aggregate('dataframe'[,col:col], by = list(factor1 = 'dataframe'$factor1), 
+                    FUN = function)
+
+# 'dataframe'; name of data frame
+# [,col:col]; index which columns are wanted for summary
+# by =; argument specifies a list of factors
+# FUN =; argument names the function to apply (e.g. mean)
+
+aggregate(flowers[, 4:7], by = list(nitrogen = flowers$nitrogen), FUN = mean)
+##   nitrogen   height    weight leafarea shootarea
+## 1      low 5.853125  8.652812 11.14375   45.1000
+## 2   medium 7.012500 11.164062 13.83125   67.5625
+## 3     high 7.653125 16.646875 17.18125  126.6875
+```
+
+``` r
+# aggregate() with multiple factors
+
+aggregate('dataframe'[,col:col], by = list(factor1 = 'dataframe'$factor1, 
+                    factor2 = 'dataframe'$factor2), FUN = function)
+
+aggregate(flowers[, 4:7], by = list(nitrogen = flowers$nitrogen,
+                                 treat = flowers$treat), FUN = mean)
+##   nitrogen treat  height    weight leafarea shootarea
+## 1      low notip 3.66875  8.289375 12.32500  59.89375
+## 2   medium notip 4.83750 11.316875 14.17500  94.53125
+## 3     high notip 5.70625 16.604375 18.81875 155.31875
+## 4      low   tip 8.03750  9.016250  9.96250  30.30625
+## 5   medium   tip 9.18750 11.011250 13.48750  40.59375
+## 6     high   tip 9.60000 16.689375 15.54375  98.05625
+```
+
+``` r
+# formula method of aggregate()
+
+aggregate(variable ~ factor1 + factor2, FUN = function, data = 'dataframe')
+# ~; specify the variable to apply function on
+# +; specify and separate the factors 
+
+aggregate(height ~ nitrogen + treat, FUN = mean, data = flowers)
+##   nitrogen treat  height
+## 1      low notip 3.66875
+## 2   medium notip 4.83750
+## 3     high notip 5.70625
+## 4      low   tip 8.03750
+## 5   medium   tip 9.18750
+## 6     high   tip 9.60000
+
+# useful to apply function to subsets of the original data
+subset =; argument
+
+aggregate(variable ~ factor1 + factor2, FUN = function, subset = variable2 '...', 
+                    data = 'dataframe')
+# '...' can be <, >, >=, <=, ==, != etc
+
+aggregate(height ~ nitrogen + treat, FUN = mean, subset = flowers < 7, 
+                    data = flowers)
+##   nitrogen treat   height
+## 1      low notip 3.533333
+## 2   medium notip 5.316667
+## 3     high notip 3.850000
+## 4      low   tip 8.176923
+## 5   medium   tip 8.570000
+## 6     high   tip 7.900000
+
+aggregate(height ~ nitrogen + treat, FUN = mean, subset = block == "1", 
+                    data = flowers)
+##   nitrogen treat  height
+## 1      low notip  3.3250
+## 2   medium notip  5.2375
+## 3     high notip  5.9250
+## 4      low   tip  8.7500
+## 5   medium   tip  9.5375
+## 6     high   tip 10.0375
+```
+
+## 3.6 Exporting data
+
+``` r
+write.table() function
+# exporting data frames
+
+write.table('dataframe', file = 'data/filename.txt', col.names = TRUE, 
+                        row.names = FALSE, sep = "\t")
+# 'dataframe'; manipulated/transformed data frame wanted to export
+# file =; give filename and filepath
+# col.names = TRUE; argument that indicates that the variable names should 
+    # be written in the first row of the file
+# row.names = FALSE; argument that stops R from including the row names in 
+  # the first column of the file
+# sep = "\t"; argument that indicattes that a Tab should be used as the 
+  # delimiter in the exported file
+
+write.table(flowers_df2, file = 'data/flowers_04_12.txt', col.names = TRUE,
+             row.names = FALSE, sep = "\t")
+```
+
+\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*In Excel: File → Open ... → \*\*\*\*\*\*\*\*\*\*\*select file\*\*\*\*\*\*\*\*\*\*\* → \*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*choose 'Tab' option to set delimiter →\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\* Finish\*\*
+
+other delimiters:
+
+``` r
+.csv (comman separated values)
+# set separator argument to comma, sep = ","
+
+write.table('dataframe', file = 'data/filename.csv', col.names = TRUE, 
+                        row.names = FALSE, sep = ",")
+
+write.table(flowers_df2, file = 'data/flowers_04_12.csv', col.names = TRUE,
+             row.names = FALSE, sep = ",")
+
+# or use convenience function write.csv()
+
+write.csv('dataframe', file = 'data/filename.csv', row.names = FALSE)
+
+write.csv(flowers_df2, file = 'data/flowers_04_12.csv', row.names = FALSE)
+```
+
+other exporting functions:
+
+``` r
+fwrite() function
+# useful for exporting large data objects
+
+# for tab delimited text file
+library(read.table)
+fwrite('dataframe', file = 'data/filename.txt', sep = "\t")
+
+# for csv delimited file
+library(read.table)
+fwrite('dataframe', file = 'data/filename.csv')
+```
+
+``` r
+write_tsv() function from readr package
+# writing tab delimited files
+
+# for tab delimited text file
+library(readr)
+write_tsv('dataframe, path = 'data/filename.txt')
+
+# for csv delimited file
+library(readr)
+write_csv('dataframe, path = 'data/filename.csv')
+```
+
+``` r
+# save data directly to an Excel spreadsheet
+write_excel_csv() function
+
+write_excel_csv('dataframe')
+```
+
+note: NOT RECOMMENDED

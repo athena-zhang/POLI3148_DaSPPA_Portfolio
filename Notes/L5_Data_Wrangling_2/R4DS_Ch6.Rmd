@@ -1,0 +1,194 @@
+---
+title: "R4DS_Ch6"
+author: "Athena Zhang"
+date: "2023-09-26"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Chapter 6
+
+## Data Tidying
+
+### 6.2 Tidy Data
+
+------------------------------------------------------------------------
+
+There are 3 interrelated rules that make a dataset tidy:
+
+1.  **Each variable is a column; each column is a variable**
+
+2.  **Each observation is a row; each row is an observation**
+
+3.  Each value is a cell; each cell is a single value
+
+    ![](images/Screenshot%202023-11-08%20at%209.48.02%20pm.png)
+
+    *2 advantages of tidy data:*
+
+<!-- -->
+
+1.  consistent data storage allows easy manipulation
+2.  placing variables in columns allows R's vectorised nature to be utilised
+
+### 6.3 Lengthening data
+
+------------------------------------------------------------------------
+
+Data is often untidy, because:
+
+1.  data is often organised to facilitate some goal other than analysis (e.g. data entry)
+2.  most ppl aren't familiar with the principles of tidy data
+
+**How to tidy:**
+
+1.  find underlying variables and observations
+2.  `pivot` data into a tidy form
+
+``` r
+pivot_longer()
+#^ most common
+
+pivot_wider()
+#^
+
+#arguments
+
+cols = ...
+#^ specifies which columns need to be pivoted, i.e. which columns aren't variables
+# same syntax as select()
+#!c(var1, var2, var3) or starts_with("col_that_aren't_variables")
+
+names_to = ...
+#^ names the variable stored in the column names
+
+values_to = ...
+#^ names the variable stored in the cell values
+
+values_drop_na = TRUE
+#^ gets rid of NA observations due to structure of the og dataset
+
+billboard |> 
+  pivot_longer(
+    cols = starts_with("wk"), 
+    names_to = "week", 
+    values_to = "rank"
+  )
+```
+
+![](images/Screenshot%202023-11-08%20at%209.49.54%20pm.png){width="490"}
+
+``` r
+# converting values of "week" from character strings to numbers using mutate()
+# and readr::parse_number()
+billboard_longer <- billboard |> 
+  pivot_longer(
+    cols = starts_with("wk"), 
+    names_to = "week", 
+    values_to = "rank",
+    values_drop_na = TRUE
+  ) |> 
+  mutate(
+    week = parse_number(week)
+  )
+
+# parse_number() extracts the first number from a string, ignoring all other text
+```
+
+#### 6.3.3 Many variables in column names
+
+``` r
+# datasets with multiiple variables in column names
+
+pivot_longer()
+
+#arguments
+
+names_to = c("var1", "var2", "var3")
+#^ extracting and naming different variables in the og column name
+
+names_sep = "..."
+#^ the splitting symbol between variables in the og column name, e.g. "_"
+
+names_pattern = 
+#^ alternative to names_sep, used to extract variables from more complicated 
+# naming scenarios
+
+who2 |> 
+  pivot_longer(
+    cols = !(country:year),
+    names_to = c("diagnosis", "gender", "age"), 
+    names_sep = "_",
+    values_to = "count"
+  )
+```
+
+#### 6.3.4 Data and variable names in the column headers
+
+![](images/Screenshot%202023-11-08%20at%209.51.10%20pm.png){width="434"}
+
+``` r
+pivot_longer()
+
+# arguments
+
+names_to = c(".value", "var")
+#^ overrides the usual values_to argument to use the first component of the 
+# pivoted column name as a variable name in the output
+
+household |> 
+  pivot_longer(
+    cols = !family, 
+    names_to = c(".value", "child"), 
+    names_sep = "_", 
+    values_drop_na = TRUE
+  )
+#> # A tibble: 9 × 4
+#>   family child  dob        name 
+#>    <int> <chr>  <date>     <chr>
+#> 1      1 child1 1998-11-26 Susan
+#> 2      1 child2 2000-01-29 Jose 
+#> 3      2 child1 1996-06-22 Mark 
+#> 4      3 child1 2002-07-11 Sam  
+#> 5      3 child2 2004-04-05 Seth 
+#> 6      4 child1 2004-10-10 Craig
+#> # ℹ 3 more rows
+```
+
+![](images/Screenshot%202023-11-08%20at%209.51.47%20pm.png){width="588"}
+
+### 6.4 Widening data
+
+``` r
+pivot_wider()
+# increases columns and reduces rows
+# use when one observation is spread across multiple rows
+
+# use distinct() to see set of values
+
+#arguments
+
+id_cols = 
+#^ which column/s have values that uniquely identify each row
+# select() syntax
+
+values_from = 
+#^ provide existing columns that define the values
+
+names_from = 
+#^ provide existing column that define the different column names
+
+cms_patient_experience |> 
+  pivot_wider(
+    id_cols = starts_with("org"),
+    names_from = measure_cd,
+    values_from = prf_rate
+  )
+```
+
+`[vignette("pivot", package = "tidyr")](https://tidyr.tidyverse.org/articles/pivot.html)`
+
+\^note: use if unclear

@@ -1,0 +1,437 @@
+---
+title: "Douglas_et_al_Ch8"
+author: "Athena Zhang"
+date: "2023-09-28"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Chapter 8
+
+R Markdown
+
+```{r}
+library(rmarkdown)
+
+render('my_first_rmarkdown.Rmd', output_format = 'html_document')
+
+# alternatively if you don't want to load the rmarkdown package
+
+rmarkdown::render('my_first_rmarkdown.Rmd', output_format = 'html_document')
+
+# see ?render for more options
+```
+
+### Components of R Markdown doc
+
+#### 1. **YAML header**
+
+```{r}
+---
+title: My first R markdown document
+author: Jane Doe
+date: March 01, 2020
+output: html_document
+---
+```
+
+#### 2. **formatted text**
+
+|               |                |            |
+|---------------|----------------|------------|
+| **Goal**      | **R markdown** | **output** |
+| bold text     | `**mytext**`   | **mytext** |
+| italic text   | `*mytext*`     | *mytext*   |
+| strikethrough | `~~mytext~~`   | ~~mytext~~ |
+| superscript   | `mytext^2^`    | mytext2    |
+| subscript     | `mytext~2~`    | mytext2    |
+
+```{r}
+# underlining is not commonly used
+# for underlining for HTML output
+<span style="text-decoration:underline">underline this text</span>
+
+# for underlining for PDF output
+$\text{\underline{This sentence underlined using \LaTeX}}$
+```
+
+```{r}
+# for multiple spaces within the text
+&nbsp
+These &nbsp; &nbsp; &nbsp; data were &nbsp; &nbsp; &nbsp; &nbsp; obtained from a  
+mesocosm experiment which &nbsp; &nbsp; aimed to examine the    
+effect &nbsp; &nbsp; &nbsp; &nbsp; benthic polychaete (*Nereis diversicolor*) biomass.
+
+These       data were         obtained from a
+mesocosm experiment which     aimed to examine the
+effect         benthic polychaete (Nereis diversicolor) biomass.
+```
+
+```{r}
+# comments
+
+# is used to comment code inside a code chunk
+
+# use <!-- and --> for a comment in the R markdown doc (not in code chunk) 
+# and not in final rendered document
+
+<!--
+this is an example of how to format a comment using R markdown.
+-->
+```
+
+```{r}
+# lists (bullet points)
+
+- item 1
+- item 2
+   + sub-item 2
+   + sub-item 3
+- item 3
+- item 4
+
+# ordered list (1. 2. 3.)
+
+1. item 1
+2. item 2
+     + sub-item 2
+     + sub-item 3
+3. item 3
+4. item 4
+```
+
+```{r}
+# including images
+
+!['figure name'](images/imagename.jpg)
+# must ensure it is in the correct directory
+```
+
+```{r}
+# including links
+
+[link](https://www.worldwildlife.org)
+```
+
+#### 3. **one or more code chunks**
+
+```{r}
+Any valid R code goes here
+```
+
+chunk options:
+
+```{r}
+# naming code chunks
+
+x <- 1:10    # create an x variable
+y <- 10:1    # create a y variable
+dataf <- data.frame(x = x, y = y)
+
+summary(dataf)
+
+x <- 1:10    # create an x variable
+y <- 10:1    # create a y variable
+dataf <- data.frame(x = x, y = y)
+
+summary(dataf)
+##        x               y        
+##  Min.   : 1.00   Min.   : 1.00  
+##  1st Qu.: 3.25   1st Qu.: 3.25  
+##  Median : 5.50   Median : 5.50  
+##  Mean   : 5.50   Mean   : 5.50  
+##  3rd Qu.: 7.75   3rd Qu.: 7.75  
+##  Max.   :10.00   Max.   :10.00
+```
+
+```{r}
+# only output of R code and not the code itself
+# use echo=FALSE
+
+x <- 1:10    # create an x variable
+y <- 10:1    # create a y variable
+dataf <- data.frame(x = x, y = y)
+summary(dataf)
+
+##        x               y        
+##  Min.   : 1.00   Min.   : 1.00  
+##  1st Qu.: 3.25   1st Qu.: 3.25  
+##  Median : 5.50   Median : 5.50  
+##  Mean   : 5.50   Mean   : 5.50  
+##  3rd Qu.: 7.75   3rd Qu.: 7.75  
+##  Max.   :10.00   Max.   :10.00
+```
+
+```{r}
+# only display code and not the output
+# use results='hide'
+
+x <- 1:10    # create an x variable
+y <- 10:1    # create a y variable
+dataf <- data.frame(x = x, y = y)
+summary(dataf)
+
+x <- 1:10    # create an x variable
+y <- 10:1    # create a y variable
+dataf <- data.frame(x = x, y = y)
+summary(dataf)
+```
+
+```{r}
+# execute code chunk without showing any output
+# use include=FALSE
+
+x <- 1:10    # create an x variable
+y <- 10:1    # create a y variable
+dataf <- data.frame(x = x, y = y)
+summary(dataf)
+```
+
+|                  |                    |                                                                                                                                                                                                                      |
+|--------------|--------------|---------------------------------------------|
+| **Chunk option** | **default value**  | **Function**                                                                                                                                                                                                         |
+| echo             | `echo=TRUE`        | If FALSE, will not display the code in the final document                                                                                                                                                            |
+| results          | `results='markup'` | If 'hide', will not display the code's results in the final document. If 'hold', will delay displaying all output pieces until the end of the chunk. If 'asis', will pass through results without reformatting them. |
+| include          | `include=TRUE`     | If FALSE, will run the chunk but not include the chunk in the final document.                                                                                                                                        |
+| eval             | `eval=TRUE`        | If FALSE, will not run the code in the code chunk.                                                                                                                                                                   |
+| message          | `message=TRUE`     | If FALSE, will not display any messages generated by the code.                                                                                                                                                       |
+| warning          | `warning=TRUE`     | If FALSE, will not display any warning messages generated by the code.                                                                                                                                               |
+
+#### 4. figure
+
+```{r}
+# figures produced by code will be placed immediately after the code 
+# chunk they were generated from
+
+x <- 1:10    # create an x variable
+y <- 10:1    # create a y variable
+dataf <- data.frame(x = x, y = y)
+plot(dataf$x, dataf$y, xlab = "x axis", ylab = "y axis")
+
+x <- 1:10    # create an x variable
+y <- 10:1    # create a y variable
+dataf <- data.frame(x = x, y = y)
+plot(dataf$x, dataf$y, xlab = "x axis", ylab = "y axis")
+```
+
+![](images/Screenshot%202023-11-08%20at%209.21.56%20pm.png){width="458"}
+
+```{r}
+# change plot dimensions
+# fig.width= and fig.height=
+# note that ^ are in inches
+
+# change alignment with fig.align=
+
+``{r, simple-plot, fig.width=4, fig.height=3, fig.align='center'}
+x <- 1:10    # create an x variable
+y <- 10:1    # create a y variable
+dataf <- data.frame(x = x, y = y)
+plot(dataf$x, dataf$y, xlab = "x axis", ylab = "y axis")
+
+x <- 1:10    # create an x variable
+y <- 10:1    # create a y variable
+dataf <- data.frame(x = x, y = y)
+plot(dataf$x, dataf$y, xlab = "x axis", ylab = "y axis")
+```
+
+![](images/Screenshot%202023-11-08%20at%209.22.37%20pm.png){width="377"}
+
+```{r}
+# caption a figure
+# fig.cap=
+
+x <- 1:10    # create an x variable
+y <- 10:1    # create a y variable
+dataf <- data.frame(x = x, y = y)
+plot(dataf$x, dataf$y, xlab = "x axis", ylab = "y axis")
+
+x <- 1:10    # create an x variable
+y <- 10:1    # create a y variable
+dataf <- data.frame(x = x, y = y)
+plot(dataf$x, dataf$y, xlab = "x axis", ylab = "y axis")
+```
+
+![](images/Screenshot%202023-11-08%20at%209.23.21%20pm.png){width="383"}
+
+Figure 8.1: A simple plot
+
+```{r}
+#suppress figure in final rendered document
+# fig.show='hide'
+
+x <- 1:10    # create an x variable
+y <- 10:1    # create a y variable
+dataf <- data.frame(x = x, y = y)
+plot(dataf$x, dataf$y, xlab = "x axis", ylab = "y axis")
+
+x <- 1:10    # create an x variable
+y <- 10:1    # create a y variable
+dataf <- data.frame(x = x, y = y)
+plot(dataf$x, dataf$y, xlab = "x axis", ylab = "y axis")
+```
+
+#### 5. adding tables
+
+```{r}
+# using inbuilt data set 'iris'
+
+iris[1:10,]
+
+##    Sepal.Length Sepal.Width Petal.Length Petal.Width Species
+## 1           5.1         3.5          1.4         0.2  setosa
+## 2           4.9         3.0          1.4         0.2  setosa
+## 3           4.7         3.2          1.3         0.2  setosa
+## 4           4.6         3.1          1.5         0.2  setosa
+## 5           5.0         3.6          1.4         0.2  setosa
+## 6           5.4         3.9          1.7         0.4  setosa
+## 7           4.6         3.4          1.4         0.3  setosa
+## 8           5.0         3.4          1.5         0.2  setosa
+## 9           4.4         2.9          1.4         0.2  setosa
+## 10          4.9         3.1          1.5         0.1  setosa
+
+
+# using native markdown syntax (doesn't have to be in a code chunk)
+# :-------: means line above is a header and lines below is body of the table
+
+
+    |     x      |    y       |
+    |:----------:|:----------:|
+    |  1         |   5        |   
+    |  2         |   4        |
+    |  3         |   3        |
+    |  4         |   2        |
+    |  5         |   1        |
+```
+
+|       |       |
+|-------|-------|
+| **x** | **y** |
+| 1     | 5     |
+| 2     | 4     |
+| 3     | 3     |
+| 4     | 2     |
+| 5     | 1     |
+
+Alignment within the table is set by the position of the `.`:.
+
+To center align use `:------:`, to left align `:------`and right align `------:`.
+
+```{r}
+# another way of including tables
+# kable()
+# can create tables for HTML, PDF and Word outputs
+
+# To create a table of the first 10 rows of the iris dataframe using 
+# the kable() function
+
+library(knitr)
+kable(iris[1:10,])
+```
+
+|                  |                 |                  |                 |             |
+|---------------|---------------|---------------|---------------|---------------|
+| **Sepal.Length** | **Sepal.Width** | **Petal.Length** | **Petal.Width** | **Species** |
+| 5.1              | 3.5             | 1.4              | 0.2             | setosa      |
+| 4.9              | 3.0             | 1.4              | 0.2             | setosa      |
+| 4.7              | 3.2             | 1.3              | 0.2             | setosa      |
+| 4.6              | 3.1             | 1.5              | 0.2             | setosa      |
+| 5.0              | 3.6             | 1.4              | 0.2             | setosa      |
+| 5.4              | 3.9             | 1.7              | 0.4             | setosa      |
+| 4.6              | 3.4             | 1.4              | 0.3             | setosa      |
+| 5.0              | 3.4             | 1.5              | 0.2             | setosa      |
+| 4.4              | 2.9             | 1.4              | 0.2             | setosa      |
+| 4.9              | 3.1             | 1.5              | 0.1             | setosa      |
+
+!! The `kable()` function offers plenty of options to change the formatting of the table.
+
+For example, if we want to round numeric values to one decimal place use the `digits =` argument.
+
+To center justify the table contents use `align = 'c'` and to provide custom column headings use the `col.names =`argument.
+
+See `?knitr::kable` for more information.
+
+```{r}
+kable(iris[1:10,], digits = 0, align = 'c', 
+       col.names = c('sepal length', 'sepal width', 
+       'petal length', 'petal width', 'species'))
+```
+
+|                  |                 |                  |                 |             |
+|---------------|---------------|---------------|---------------|---------------|
+| **sepal length** | **sepal width** | **petal length** | **petal width** | **species** |
+| 5                | 4               | 1                | 0               | setosa      |
+| 5                | 3               | 1                | 0               | setosa      |
+| 5                | 3               | 1                | 0               | setosa      |
+| 5                | 3               | 2                | 0               | setosa      |
+| 5                | 4               | 1                | 0               | setosa      |
+| 5                | 4               | 2                | 0               | setosa      |
+| 5                | 3               | 1                | 0               | setosa      |
+| 5                | 3               | 2                | 0               | setosa      |
+| 4                | 3               | 1                | 0               | setosa      |
+| 5                | 3               | 2                | 0               | setosa      |
+
+#### 5. Inline R code
+
+```{r}
+# use 'r write your code here'
+
+Morphological characteristics (variable names:  `r names(iris)[1:4]`) were measured from   
+`r nrow(iris)` *Iris sp.* plants from  `r length(levels(iris$Species))` different  
+species. The mean Sepal length was `r round(mean(iris$Sepal.Length), digits = 2)` mm.
+
+
+```
+
+#### Morphological characteristics (variable names: Sepal.Length, Sepal.Width, Petal.Length, Petal.Width) were measured from 150 *iris* plants from 3 different species. The mean Sepal length was 5.84 mm.
+
+note: these values will automatically be updated if your data changes
+
+### **Some tips and tricks from the textbook**
+
+#### (1) Problem
+
+When rendering my R markdown document to pdf my code runs off the edge of the page.
+
+**Solution:**
+
+Add a global_options argument at the start of your .Rmd file in a code chunk:
+
+```{r}
+```
+
+This code chunk won't be displayed in the final document due to the `include = FALSE` argument and you should place the code chunk immediately after the YAML header to affect everything below that. `tidy.opts = list(width.cutoff = 60), tidy=TRUE` defines the margin cutoff point and wraps text to the next line. Play around with this value to get it right (60-80 should be OK for most documents).
+
+#### (2) Problem
+
+When I load a package in my R markdown document my rendered output contains all of the startup messages and/or warnings.
+
+**Solution:**
+
+You can load all of your packages at the start of your R markdown document in a code chunk along with setting your global options.
+
+```{r}
+```
+
+The `message=FALSE` and `warning=FALSE` arguments suppress messages and warnings. The `suppressPackageStartupMessages(library(ggplot2))` will load the `ggplot2` package but suppress startup messages.
+
+#### (3) Problem
+
+When rendering my R markdown document to pdf my tables and/or figures are split over two pages.
+
+**Solution:**
+
+Add a page break using the LateX `\pagebreak` notation before your offending table or figure
+
+#### (4) Problem
+
+The code in my rendered document looks ugly!
+
+**Solution:**
+Add the argument `tidy=TRUE` to your global arguments. Sometimes, however, this can cause problems especially with correct code indentation.
+
+```{r}
+```

@@ -1,0 +1,334 @@
+---
+title: "R4DS_Ch4"
+author: "Athena Zhang"
+date: "2023-09-28"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Chapter 4
+
+## Data Transformation
+
+### 4.1.3 **dplyr basics:**
+
+note: dplyr verbs r just functions
+
+1.  The first argument is always a data frame.
+2.  The subsequent arguments typically describe which columns to operate on, using the variable names (without quotes "").
+3.  The output is always a new data frame.
+
+dplyr verbs are organised into 4 groups based on what they operate on:
+
+-   rows
+-   columns
+-   groups
+-   tables
+
+``` r
+# to view the whole data frame
+# View()
+## ^ interactive scrollable and filterable view
+# print(dataf, widt = Inf)
+## ^ shows all columns
+# glimpse()
+## ^ shows all columns
+```
+
+``` r
+<int> # integer
+<dbl> # double (aka real numbers)
+<chr> # character (aka strings)
+<dttm> # date-time
+```
+
+![](images/Screenshot%202023-11-08%20at%209.41.36%20pm.png){width="395"}
+
+### 4.2 ROWS
+
+``` r
+# filter()
+# changes which rows are present without changing their order
+
+dataf(variable > ....)
+
+# %in%
+## combining | and == for filtering for two or more values
+
+filter(x %in% c(1,2))
+#^ select data w variable x that satisfies value 1 or 2
+```
+
+``` r
+# arrange()
+# changes order of the rows whithout changing which are present
+
+dataf |>
+    arrange(a, b, c, d)
+#^ arranges the rows by the smallest a to largest a, within a, the smallest 
+    #to largest b etc
+
+# arrange(desc())
+# re-order the data frame based on that column in descending order
+```
+
+``` r
+# distinct()
+# finds all the unique rows inthe data set
+## optionally modifies the columns
+
+# distinct(x, y)
+#^ finds all unique variable x and y pairs
+
+# to keep other columns when filtering for unique rows
+# use .keep_all = TRUE option
+distinct(x, y, .keep_all = TRUE)
+```
+
+``` r
+# count()
+# find the number of occurences
+# sort = TRUE argument to arrange in descendign order of number of occurences
+count(x, y, sort = TRUE)
+```
+
+### 4.3 COLUMNS
+
+``` r
+# mutate()
+# create new columns that are derived form the existing columns 
+    #(default on the right)
+
+# use .before argument to add new variables to the left hand side
+dataf |>
+    mutate(
+        a = x - y
+        b = z / p * 60
+        .before = 1
+    )
+#^ adds the new columns before the 1st column
+
+# use .before or .after argument to add variable before and after a certain variable
+.before = x
+.after = y
+
+# use .keep argument to control which variables are kept
+    # use .keep = "used" to specify only keep the columns that were involved 
+    # or created in the mutate() step
+```
+
+``` r
+# select()
+# changes which columns are present
+
+dataf |>
+    select(a, b, c)
+#^ select columns by name
+
+dataf |>
+    select(a:c)
+#^ select all columns between a and c (inclusive)
+
+dataf |>
+    select(!a:c)
+#^ select all columns except those from a:c (inclusive
+
+dataf |>
+    select(wehre(is.character))
+#^ select all columns that are characters
+
+# other helper functions:
+
+starts_with("abc")
+    # matches names that begin with "abc"
+
+ends_with("xyz")
+    # matches names that end with "xyz"
+
+contains("ijk")
+    # matches names that contain "ijk"
+
+num_range("x", 1:3)
+    # matches x1, x2 and x3
+
+##^ see ?select for more details
+
+#use = argument to rename variables whilst select()
+    #^ new name appears on the left hand side of the =
+    #^ old variable appears on the right hand side
+dataf |>
+    select(x_new = x_old)
+```
+
+``` r
+# rename()
+# changes the names of the columns (keeps all exsiting variables)
+dataf |>
+    rename(x_new = x_old)
+
+## try janitor::clean_names() for automated cleaning of column names
+```
+
+``` r
+# relocate()
+# changes the positions of the columns (default: moves variables to the front)
+dataf |>
+    relocate(m, n)
+# m n a b c ...
+
+# specify with .before and .after argument
+dataf |>
+    relocate(g:j, .after = b)
+
+dataf |>
+    relocate(starts_with("p"), .before = d)
+```
+
+### 4.4 The pipe `|>` or `%>%`
+
+-   easier than nesting each function call inside the previous call
+-   easier than using a bunch of intermediate objects
+
+``` r
+dataf |>
+    filter(...) |>
+    mutate(...) |>
+    select(...) |>
+    arrange(...)
+    
+```
+
+### 4.5 GROUPS
+
+``` r
+# group_by()
+# divide dataset into groups meaningfulfor analysis
+
+dataf |>
+    group_by(month)
+# Groups: month [12]
+#^ means subsequent operions will now work "by month"
+
+# can also group with more than one variable
+daily <- dataf |>
+    group_by(year, month, day)
+# makes a group for each date
+```
+
+``` r
+# summarize()
+# reduces the data frame to a have a single row for each group
+
+dataf |>
+    group_by(month) |>
+    summarize(
+        x_mean = mean(x, na.rm = TRUE)
+    )
+# month x_mean
+# <int> <dbl>
+# 1 1   32.1
+# etc for 12 rows
+
+#^ remember na.rm is to ignore NA values
+
+# use n() argument for a sumamry of the number of rows in each group
+dataf |>
+    group_by(month) |>
+    summarize(
+        x_mean = mean(x, na.rm = TRUE),
+    n = n()
+    )
+# month x_mean n
+# <int> <dbl> <int>
+# 1 1   32.1  9457
+# etc for 12 rows
+
+# summarising when tibble is grouped by more than one variable
+## note that each summary peels off the last group
+daily)flighrts <- daily |>
+    summarize(n=n())
+#> `summarise()` has grouped output by 'year', 'month'. You can override using
+#> the `.groups` argument.
+
+#use .groups argument to explicity request "peeling" behavior in order to 
+    #suppress the message
+daily_flights <- daily |> 
+  summarize(
+    n = n(), 
+    .groups = "drop_last"
+  )
+
+#alternatively, change the defuault behavior by setting a different value, 
+# e.g., "drop" to drop all grouping or "keep" to preserve the same groups
+```
+
+#### 4.5.3 `slice_` functions - extracts specific rows within each group
+
+-   `df |> slice_head(n = 1)` takes the first row from each group.
+-   `df |> slice_tail(n = 1)` takes the last row in each group.
+-   `df |> slice_min(x, n = 1)` takes the row with the smallest value of column `x`.
+-   `df |> slice_max(x, n = 1)` takes the row with the largest value of column `x`.
+-   `df |> slice_sample(n = 1)` takes one random row.
+
+Note: vary n = to select more than 1 row OR
+
+use prop = 0.1 to select e.g. 10% of the rows in each group
+
+``` r
+# use with_ties = FALSE argument to slice exactly one row per group
+## shows whole corresponding row instead of single summary statistic with 
+    ## summarize()
+```
+
+#### 4.5.5 `ungroup`ing
+
+``` r
+#use ungroup() function to remove grouping from a data frame without using 
+#summarize()
+
+dataf |>
+    ungroup()
+
+# now summarize an ungrouped data fram shows:
+dataf |>
+    ungroup() \>
+    summarize(
+        avg_x = mean(x, na.rm = TRUE),
+        y = n()
+    )
+# avg_x y
+# <dbl> <int>
+#1 12.6 3473948
+
+#^single row because dplyr treats all the rows in an ungrouped data frame as 
+#belonging to one group
+```
+
+#### 4.5.6 `.by`
+
+``` r
+#use .by argument to group within a single operation
+
+dataf |> 
+  summarize(
+    avg_x = mean(x, na.rm = TRUE), 
+    n = n(),
+    .by = month
+  )
+
+# or group by multible variables
+
+flights |> 
+  summarize(
+    delay = mean(dep_delay, na.rm = TRUE), 
+    n = n(),
+    .by = c(origin, dest)
+  )
+
+#works with all verbs
+# don't need groups argument to suppress the grouping message
+# don't need to ungroup()
+```
