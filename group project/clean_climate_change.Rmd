@@ -1,0 +1,30 @@
+---
+title: "clean_climate_change"
+author: "Athena Zhang"
+date: "2023-12-05"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+# loading tidyverse package
+library(tidyverse)
+```
+
+```{r}
+# importing data
+epi <- read_csv('data/epi2022regionalresults05302022.csv')
+```
+
+```{r}
+# selecting only country and climate change relevant measures
+cc <- epi |>
+  select(country, PCC.new)
+```
+
+```{r}
+unique(cc$country)
+```

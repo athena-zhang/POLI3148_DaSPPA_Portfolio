@@ -1,0 +1,241 @@
+---
+title: "final_project"
+author: "HU Wenxiao"
+date: "`r Sys.Date()`"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(lubridate)
+library(tidytext)
+library(SnowballC)
+library(ggwordcloud)
+library(wordcloud2)
+```
+
+# Policy data
+
+## 1. Data wrangling
+
+### 1.1 data cleaning
+
+#selecting data
+
+```{r}
+d <-read_csv("data/region-g20+countries.csv")
+```
+
+```{r}
+d_policy <- d |>
+  select('Country', 'Name of policy','Energy Type','Date of announcement','Date of entry info force','Value committed, USD')
+```
+
+#data integrity check for policy date NA
+
+```{r}
+d_policy |>
+  mutate(Date_missing=as.numeric(is.na(`Date of entry info force`)),.after=`Date of entry info force`)|>
+  group_by(Country)|>
+  summarize(N_Date_missing=sum(Date_missing))
+```
+
+#data integrity check for value committed "0"\--NA
+
+```{r}
+d_policy$`Value committed, USD`[d_policy$`Value committed, USD`==0]<-NA
+```
+
+```{r}
+d_policy |>
+  mutate(Value_missing=as.numeric(is.na(`Value committed, USD`)),.after=`Value committed, USD`)|>
+  group_by(Country)|>
+  summarize(N_Value_missing=sum(Value_missing))
+```
+
+#deletion of NA
+
+```{r}
+d_policy <- d_policy[complete.cases(d_policy),]
+```
+
+```{r}
+write.csv(d_policy,"data/clean_policy_dataset.csv",row.names = FALSE)
+```
+
+# 2. Text mining
+
+## 2.1 Wrangling
+
+```{r}
+d_policy_tokenized=d_policy |>
+  select(Country,`Name of policy`,'Date of entry info force')|>
+  unnest_tokens(word,`Name of policy`)
+d_policy_tokenized <- d_policy_tokenized |>
+  filter(!str_detect(word, "[0-9]+"))
+```
+
+remove stop words
+
+```{r}
+data("stop_words")
+d_policy_tokenized=d_policy_tokenized |>
+  anti_join(stop_words,by="word")
+```
+
+create stem
+
+```{r}
+d_policy_tokenized=d_policy_tokenized |>
+  mutate(stem=wordStem(word))
+```
+
+## 2.2 Data analysis
+
+### word frequencies
+
+```{r}
+word_frequency = d_policy_tokenized |>
+  count(stem, sort = TRUE)
+```
+
+### plot a word cloud
+
+```{r}
+word_frequency |>
+  slice(1:100)|>
+  ggplot(aes(label=stem,size=n))+
+  scale_size_area(max_size=8)+
+  geom_text_wordcloud()+
+  theme_minimal()
+```
+
+```{r}
+wordcloud2(word_frequency,color="darkgreen")
+```
+
+### 2.3 calculate country-level word frequencies
+
+create a df with only stem from their own countries' policy
+
+```{r}
+d_policy_frequencies <- d_policy_tokenized |>
+  group_by(Country, stem) |>
+  count()|>
+  mutate(prop=n/sum(word_frequency$n)*100)
+```
+
+### 2.4 create document-term matrix
+
+A. use pivot wider
+
+```{r}
+new <-d_policy_frequencies |>
+  pivot_wider(names_from=stem,values_from=prop,values_fill=0)|>
+  select(-n)|>
+  group_by(Country)|>
+  summarise(across(everything(),~if(all(.==0))0 else sum(.)))
+```
+
+B. document-term matrix
+
+create a df with all stem
+
+```{r}
+all_combinations<-expand.grid(Country=unique(d_policy_frequencies$Country),stem=unique(word_frequency$stem))
+```
+
+```{r}
+d_policy_merged <-left_join(all_combinations,d_policy_frequencies,by=c("Country","stem"))
+```
+
+```{r}
+d_policy_merged <-d_policy_merged |>
+  mutate(n=ifelse(is.na(n),0,n))|>
+  mutate(prop=ifelse(is.na(prop),0,prop))|>
+  arrange(Country)
+view(d_policy_merged)
+```
+
+pivoting data to perform linear regression:
+
+```{r}
+d_policy_pivoted <- d_policy_merged |>
+  pivot_wider(
+    id_cols = Country,
+    names_from = stem,
+    values_from = prop
+  )
+view(d_policy_pivoted)
+unique(d_policy_pivoted$Country)
+```
+
+exporting data on keywords:
+
+```{r}
+write.csv(d_policy_pivoted, file = "data/00keyword_data.csv")
+```
+
+importing epi data:
+
+```{r}
+epi <- read_csv('data/epi2022regionalresults05302022.csv')
+view(epi)
+```
+
+selecting only EPI variable
+
+```{r}
+epi_only <- epi |>
+  select(country, EPI.new)
+epi_only <- epi_only |> rename("Country"="country", "EPI"="EPI.new")
+view(epi_only)
+```
+
+changing South Korea to Republic of Korea and United States of America to United States
+
+```{r}
+epi_only$Country[epi_only$Country=="South Korea"] <-"Republic of Korea"
+epi_only$Country[epi_only$Country=="United States of America"] <-"United States"
+```
+
+exporting epi data
+
+```{r}
+write.csv(epi_only, "data/00epi_data.csv", row.names = FALSE)
+```
+
+joining policy data and epi data
+
+```{r}
+d_policy_epi <- left_join(d_policy_pivoted, epi_only, by = "Country")
+view(d_policy_epi)
+```
+
+relocating epi column
+
+```{r}
+d_policy_epi <- d_policy_epi |> relocate(EPI, .after = Country)
+view(d_policy_epi)
+```
+
+linear regression ... (multiple manipulated IV [keywords] v EPI DV) -\> LASSO
+
+-   removes all the non-significant variables that cause multicollinearilty
+
+testing:
+
+```{r}
+install.packages("glmnet")
+library(glmnet)
+```
+
+```{r}
+
+```

@@ -691,7 +691,7 @@ save.image(file = "230913objects.RData")
 *Types of data:*
 
 | Numeric   | numbers that contain a decimal (or whole numbers)                                                                    |
-|------------------------------------|------------------------------------|
+|-----------|----------------------------------------------------------------------------------------------------------------------|
 | Integer   | whole numbers (no decimal point)                                                                                     |
 | Logical   | value is either TRUE or FALSE. also NA to represent missing values                                                   |
 | Complex   | made up of a real number and imaginary number (i)                                                                    |
@@ -760,9 +760,9 @@ Warning: NAs introduced by coercion
 
 ## 3.2 Data structures
 
-![](images/Screenshot 2023-11-08 at 9.00.41 pm.png){width="221"}
+![](images/Screenshot%202023-11-08%20at%209.00.41%20pm.png){width="221"}
 
-![](images/Screenshot 2023-11-08 at 9.01.58 pm.png){width="378"}
+![](images/Screenshot%202023-11-08%20at%209.01.58%20pm.png){width="378"}
 
 **scalars** - vectors that have a single value
 

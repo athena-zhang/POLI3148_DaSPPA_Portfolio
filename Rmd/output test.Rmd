@@ -1,0 +1,18 @@
+---
+title: "Output test"
+author: "Athena Zhang"
+date: "2023-11-16"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+tibble(cars)
+```
